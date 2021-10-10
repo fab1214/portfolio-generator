@@ -1,5 +1,52 @@
 const inquirer = require("inquirer");
-
+const fs = require('fs');
+const generatePage = require('./src/page-template');
+//mock data
+const mockData = {
+    name: 'Lernantino',
+    github: 'lernantino',
+    confirmAbout: true,
+    about:
+      'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et.',
+    projects: [
+      {
+        name: 'Run Buddy',
+        description:
+          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
+        languages: ['HTML', 'CSS'],
+        link: 'https://github.com/lernantino/run-buddy',
+        confirmFeature: true,
+        confirmAddProject: true
+      },
+      {
+        name: 'Taskinator',
+        description:
+          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
+        languages: ['JavaScript', 'HTML', 'CSS'],
+        link: 'https://github.com/lernantino/taskinator',
+        confirmFeature: true,
+        confirmAddProject: true
+      },
+      {
+        name: 'Taskmaster Pro',
+        description:
+          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
+        languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
+        link: 'https://github.com/lernantino/taskmaster-pro',
+        confirmFeature: false,
+        confirmAddProject: true
+      },
+      {
+        name: 'Robot Gladiators',
+        description:
+          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque.',
+        languages: ['JavaScript'],
+        link: 'https://github.com/lernantino/robot-gladiators',
+        confirmFeature: false,
+        confirmAddProject: false
+      }
+    ]
+  };
 //create function to prompt user with questions & record answers
 const promptUser = () => {
   return inquirer.prompt([
@@ -112,9 +159,9 @@ Add a New Project
         },
         {
           type: "confirm",
-          name: "featureProject",
+          name: "confirmFeature",
           message: "Would you like to feature this project?",
-          default: false,
+          default: false
         },
         {
           type: "confirm",
@@ -138,9 +185,17 @@ Add a New Project
 };
 
 //run user prompt, then project prompt...
-promptUser()
-  .then(promptProject)
-  //now show user data stored in objects for the user prompt and project prompt(s)
-  .then((portfolioData) => {
-    console.log(portfolioData);
-  });
+// promptUser()
+//   .then(promptProject)
+//   //now show user data stored in objects for the user prompt and project prompt(s)
+//   .then(portfolioData => {
+//     const pageHTML = generatePage(portfolioData);
+
+const pageHTML = generatePage(mockData);
+
+
+    fs.writeFile('./index.html', pageHTML, err => {
+        if(err) throw new Error(err);
+    });
+//   });
+
