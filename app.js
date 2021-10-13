@@ -1,52 +1,8 @@
 const inquirer = require("inquirer");
-const fs = require('fs');
-const generatePage = require('./src/page-template');
-//mock data
-const mockData = {
-    name: 'Lernantino',
-    github: 'lernantino',
-    confirmAbout: true,
-    about:
-      'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et.',
-    projects: [
-      {
-        name: 'Run Buddy',
-        description:
-          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
-        languages: ['HTML', 'CSS'],
-        link: 'https://github.com/lernantino/run-buddy',
-        confirmFeature: true,
-        confirmAddProject: true
-      },
-      {
-        name: 'Taskinator',
-        description:
-          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
-        languages: ['JavaScript', 'HTML', 'CSS'],
-        link: 'https://github.com/lernantino/taskinator',
-        confirmFeature: true,
-        confirmAddProject: true
-      },
-      {
-        name: 'Taskmaster Pro',
-        description:
-          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
-        languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
-        link: 'https://github.com/lernantino/taskmaster-pro',
-        confirmFeature: false,
-        confirmAddProject: true
-      },
-      {
-        name: 'Robot Gladiators',
-        description:
-          'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque.',
-        languages: ['JavaScript'],
-        link: 'https://github.com/lernantino/robot-gladiators',
-        confirmFeature: false,
-        confirmAddProject: false
-      }
-    ]
-  };
+const { writeFile, copyFile } = require('./utils/generate-site.js')
+const generatePage = require("./src/page-template.js");
+
+
 //create function to prompt user with questions & record answers
 const promptUser = () => {
   return inquirer.prompt([
@@ -79,7 +35,8 @@ const promptUser = () => {
     {
       type: "confirm",
       name: "confirmAbout",
-      message: 'Would you like to enter some information about yourself for an "About" section?',
+      message:
+        'Would you like to enter some information about yourself for an "About" section?',
       default: true,
     },
     {
@@ -92,8 +49,8 @@ const promptUser = () => {
         } else {
           return false;
         }
-      }
-    }
+      },
+    },
   ]);
 };
 
@@ -161,7 +118,7 @@ Add a New Project
           type: "confirm",
           name: "confirmFeature",
           message: "Would you like to feature this project?",
-          default: false
+          default: false,
         },
         {
           type: "confirm",
@@ -184,18 +141,30 @@ Add a New Project
   );
 };
 
-//run user prompt, then project prompt...
-// promptUser()
-//   .then(promptProject)
-//   //now show user data stored in objects for the user prompt and project prompt(s)
-//   .then(portfolioData => {
-//     const pageHTML = generatePage(portfolioData);
+//run promptUser function
+promptUser()
+//capture promptUser data, and call promptProject() for as many projects as the user wants to add. Each project is pushed into projects array...
+.then(promptProject)
+//then pushed to next .then as portfolioData and sent to generatePage function for the returned HTML
+.then(portfolioData => {
+  return generatePage(portfolioData);
+})
+//.then the pageHTML is sent to writeFile to create the HTML file
+.then(pageHTML => {
+  return writeFile(pageHTML);
+})
 
-const pageHTML = generatePage(mockData);
+//.then writeFileResponse object is resolved to log it, and then return copyFile function
+.then(writeFileResponse => {
+  console.log(writeFileResponse);
+  return copyFile();
+})
+//.then copyFileResponse or Promise is returned and checked for success or errors
+.then(copyFileResponse => {
+  console.log(copyFileResponse);
+})
+.catch(err => {
+  console.log(err);
+});
 
-
-    fs.writeFile('./index.html', pageHTML, err => {
-        if(err) throw new Error(err);
-    });
-//   });
-
+// const pageHTML = generatePage(portfolioData);
